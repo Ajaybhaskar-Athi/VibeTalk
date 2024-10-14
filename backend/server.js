@@ -1,6 +1,7 @@
 import express from "express"; //require() is commonjs and this import ,export are in ES6 Modules
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import cors from 'cors';
 
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
@@ -20,6 +21,7 @@ app.get("/", (req, res) => {
 
 app.use(cookieParser());
 app.use(express.json());
+// app.use(cors);
 
 
 app.use("/api/auth",authRoutes);

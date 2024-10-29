@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-//used in Conversation.jsx ,Message Container
+//used in Conversation.jsx ,Message Container and used in so many comp,hooks
 
 const useConversation=create((set)=>({
     selectedConversation:null,

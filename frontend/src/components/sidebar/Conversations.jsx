@@ -4,7 +4,7 @@ import { getRandomEmoji } from "../../utils/emojis";
 import Conversation from "./Conversation";
 
 const Conversations = () => {
-  const { loading, conversations = [] } = useGetConversations();
+  const { loading, conversations =[]} = useGetConversations();
 
   console.log("Conversations length in component: ", conversations.length);
   console.log("Conversations data in component: ", conversations);

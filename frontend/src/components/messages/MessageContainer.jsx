@@ -5,6 +5,7 @@ import Messages from './Messages';
 import MessageInput from './MessageInput';
 import { TiMessages } from "react-icons/ti";
 import useConversation from '../../Zustand/useConversation';
+import { useAuthContext } from '../../context/AuthContext';
 
 const MessageContainer = () => {
   const { selectedConversation, setSelectedConversation } = useConversation();
@@ -47,6 +48,10 @@ export default MessageContainer;
 const NoChatSelected = () => {
   const getUserData = JSON.parse(localStorage.getItem("chat-user"));
   const loginUser = getUserData?.fullName;
+
+  //or acces using AuthUser
+  // const {authUser}=useAuthContext();
+  //const loginUser=authUser.fullName;
 
   return (
     <div className='flex items-center justify-center w-full h-full'>

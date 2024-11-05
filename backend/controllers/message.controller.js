@@ -1,48 +1,59 @@
 import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
+import { getReceiverSocketId ,io} from "../socket/socket.js";
 
-export const sendMessage=async(req,res)=>{
- 
-        try{
-            const {message}=req.body;
-            const {id:receiverId}=req.params; //or const id=req.params.id (basic JS)
-                const senderId=req.user._id;//since we already attached user to Req object in ProtectRoute Middleware
 
-                let conversation=await Conversation.findOne({
-                        participants:{$all:[senderId,receiverId]}
-                })
 
-                if(!conversation){//first time they are chatting
-                    conversation=await Conversation ({ //this will create and save it too means new Conversation({...}) + .save()
-                        participants:[senderId,receiverId],
-                    })
-                }
+export const sendMessage = async (req, res) => {
+	try {
+		const { message } = req.body;
+		const { id: receiverId } = req.params;
+		const senderId = req.user._id;
 
-                const newMessage=new Message({
-                        senderId:senderId,
-                        receiverId:receiverId,
-                        message:message
-                })
-                if(newMessage){
-                        conversation.messages.push(newMessage._id);
-                }
+		let conversation = await Conversation.findOne({
+			participants: { $all: [senderId, receiverId] },
+		});
 
-                await conversation.save();// no need we use create() so it automaticaly saves it
-                await newMessage.save();
+		if (!conversation) {
+			conversation = await Conversation.create({
+				participants: [senderId, receiverId],
+			});
+		}
 
-                ///also if 2 promises are there u can do like below
-                // await Promise.all([conversation.save(),newMessage.save()]);//this wil run in parallel above will run obe by one 
-                console.log("Message Sent",req.params.id);
-                res.status(201).json(newMessage);
-        }
-        catch(error){
-            console.log("Error: ",error.message);
-            res.status(500).json({error:"Internal Sever Error"});
-        }
+		const newMessage = new Message({
+			senderId,
+			receiverId,
+			message,
+		});
+
+		if (newMessage) {
+			conversation.messages.push(newMessage._id);
+		}
+
+		// await conversation.save();
+		// await newMessage.save();
+
+		// this will run in parallel
+		await Promise.all([conversation.save(), newMessage.save()]);
+
+		// SOCKET IO FUNCTIONALITY WILL GO HERE
+		const receiverSocketId = getReceiverSocketId(receiverId);
+		if (receiverSocketId) {
+			// io.to(<socket_id>).emit() used to send events to specific client
+			io.to(receiverSocketId).emit("newMessage", newMessage);
+		}
+
+		res.status(201).json(newMessage);
+	} catch (error) {
+		console.log("Error in sendMessage controller: ", error.message);
+		res.status(500).json({ error: "Internal server error" });
+	}
 };
 
 
-export const getMessages = async (req, res) => {
+
+
+export const  getMessages = async (req, res) => {
     try {
         const { id: userToChatId } = req.params;
         const senderId = req.user._id;

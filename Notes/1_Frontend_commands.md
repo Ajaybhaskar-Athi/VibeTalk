@@ -44,3 +44,7 @@ It's useful for quickly building beautiful interfaces while maintaining the flex
 - we'll add <Toaster/> in App.jsx so its avail to all components
 - usage: toast.error("This didn't work.")
 - visit this site : `https://react-hot-toast.com/`
+
+
+# 4. Skeletons
+- Skeletons are used to show the loading state of a component.

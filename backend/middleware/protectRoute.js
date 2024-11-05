@@ -18,7 +18,9 @@ const protectRoute=async(req,res,next)=>{
                     return res.status(404).json({error:"UnAuthorized - User Not Found "}); //
                 }
                 req.user=user; // Attaches the found user to `req.user`
+                
                 next();
+                
                 }catch(error){
         console.log("Error in protectRoute middleWare: ",error.message);
         res.status(500).json({error:"Internal Server Error "})
